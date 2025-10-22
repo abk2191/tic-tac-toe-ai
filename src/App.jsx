@@ -18,7 +18,15 @@ function App() {
   const [aiThinking, setAiThinking] = useState(false);
 
   const audioRef = useRef(null);
+  const losingAudioRef = useRef(null); // New audio ref for losing sound
   const emojis = ["😊", "🥰", "😇"];
+  const losingEmojis = ["😭", "🥶", "🤯", "😰"]; // New losing emojis
+  const losingTexts = [
+    "Try again",
+    "Darn it",
+    "Better Luck Next Time",
+    "Try Harder",
+  ]; // New losing texts
 
   // Initialize game with random first turn for AI mode
   const initializeGame = (mode) => {
@@ -121,28 +129,45 @@ function App() {
       setWinner(winnerName);
       setShowConfetti(true);
 
-      const randomIndex = Math.floor(Math.random() * emojis.length);
-      setRandomEmoji(emojis[randomIndex]);
+      // Use different emojis and texts based on who wins
+      if (winnerName === "AI") {
+        // AI wins - use losing emojis and texts
+        const randomIndex = Math.floor(Math.random() * losingEmojis.length);
+        setRandomEmoji(losingEmojis[randomIndex]);
+        const randomText =
+          losingTexts[Math.floor(Math.random() * losingTexts.length)];
+        setCelebrationText(randomText);
 
-      const texts = [
-        "Amazing!",
-        "Incredible!",
-        "Brilliant!",
-        "Well Played!",
-        "Fantastic!",
-      ];
-      const randomText = texts[Math.floor(Math.random() * texts.length)];
-      setCelebrationText(randomText);
+        // Play losing sound when AI wins
+        if (losingAudioRef.current) {
+          losingAudioRef.current.currentTime = 0;
+          losingAudioRef.current.play();
+        }
+      } else {
+        // Player wins - use winning emojis and texts
+        const randomIndex = Math.floor(Math.random() * emojis.length);
+        setRandomEmoji(emojis[randomIndex]);
+        const texts = [
+          "Amazing!",
+          "Incredible!",
+          "Brilliant!",
+          "Well Played!",
+          "Fantastic!",
+        ];
+        const randomText = texts[Math.floor(Math.random() * texts.length)];
+        setCelebrationText(randomText);
+
+        // Play winning sound when player wins
+        if (audioRef.current) {
+          audioRef.current.currentTime = 0;
+          audioRef.current.play();
+        }
+      }
+
       setShowEmoji(true);
-
       setTimeout(() => {
         setShowEmoji(false);
       }, 2000);
-
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play();
-      }
     } else if (newValue.every((cell) => cell !== null)) {
       setWinner("Draw");
     }
@@ -175,28 +200,45 @@ function App() {
       setWinner(winnerName);
       setShowConfetti(true);
 
-      const randomIndex = Math.floor(Math.random() * emojis.length);
-      setRandomEmoji(emojis[randomIndex]);
+      // Use different emojis and texts based on who wins
+      if (winnerName === "AI") {
+        // AI wins - use losing emojis and texts
+        const randomIndex = Math.floor(Math.random() * losingEmojis.length);
+        setRandomEmoji(losingEmojis[randomIndex]);
+        const randomText =
+          losingTexts[Math.floor(Math.random() * losingTexts.length)];
+        setCelebrationText(randomText);
 
-      const texts = [
-        "Amazing!",
-        "Incredible!",
-        "Brilliant!",
-        "Well Played!",
-        "Fantastic!",
-      ];
-      const randomText = texts[Math.floor(Math.random() * texts.length)];
-      setCelebrationText(randomText);
+        // Play losing sound when AI wins
+        if (losingAudioRef.current) {
+          losingAudioRef.current.currentTime = 0;
+          losingAudioRef.current.play();
+        }
+      } else {
+        // Player wins - use winning emojis and texts
+        const randomIndex = Math.floor(Math.random() * emojis.length);
+        setRandomEmoji(emojis[randomIndex]);
+        const texts = [
+          "Amazing!",
+          "Incredible!",
+          "Brilliant!",
+          "Well Played!",
+          "Fantastic!",
+        ];
+        const randomText = texts[Math.floor(Math.random() * texts.length)];
+        setCelebrationText(randomText);
+
+        // Play winning sound when player wins
+        if (audioRef.current) {
+          audioRef.current.currentTime = 0;
+          audioRef.current.play();
+        }
+      }
+
       setShowEmoji(true);
-
       setTimeout(() => {
         setShowEmoji(false);
       }, 2000);
-
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play();
-      }
 
       setValue(newValue);
       // For two player mode, keep X/O labels
@@ -413,7 +455,12 @@ function App() {
 
   return (
     <>
+      {/* REPLACE THIS FAKE MP3 WITH REAL LOSING SOUND FILE */}
+      <audio ref={losingAudioRef} src="./fail.mp3" preload="auto" />
+
+      {/* REPLACE THIS FAKE MP3 WITH REAL WINNING SOUND FILE */}
       <audio ref={audioRef} src="./winner-sound.mp3" preload="auto" />
+
       {showConfetti && (
         <Confetti
           width={window.innerWidth}
