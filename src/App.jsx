@@ -195,27 +195,33 @@ function App() {
     // Check for winner immediately after human move
     const gameWinner = calculatewinner(newValue);
     if (gameWinner) {
+      // FIX: For two player mode, use X/O instead of Player/AI
       const winnerName =
-        gameWinner === "X" ? "Player" : gameMode === "ai" ? "AI" : "O";
+        gameMode === "twoPlayer"
+          ? gameWinner // Use "X" or "O" directly
+          : gameWinner === "X"
+          ? "Player"
+          : "AI";
+
       setWinner(winnerName);
       setShowConfetti(true);
 
       // Use different emojis and texts based on who wins
-      if (winnerName === "AI") {
-        // AI wins - use losing emojis and texts
+      if (gameMode === "ai" && winnerName === "AI") {
+        // Only in AI mode when AI wins - use losing emojis and texts
         const randomIndex = Math.floor(Math.random() * losingEmojis.length);
         setRandomEmoji(losingEmojis[randomIndex]);
         const randomText =
           losingTexts[Math.floor(Math.random() * losingTexts.length)];
         setCelebrationText(randomText);
 
-        // Play losing sound when AI wins
+        // Play losing sound only when AI wins in AI mode
         if (losingAudioRef.current) {
           losingAudioRef.current.currentTime = 0;
           losingAudioRef.current.play();
         }
       } else {
-        // Player wins - use winning emojis and texts
+        // Player wins in AI mode OR any win in two-player mode - use winning emojis and texts
         const randomIndex = Math.floor(Math.random() * emojis.length);
         setRandomEmoji(emojis[randomIndex]);
         const texts = [
@@ -228,7 +234,7 @@ function App() {
         const randomText = texts[Math.floor(Math.random() * texts.length)];
         setCelebrationText(randomText);
 
-        // Play winning sound when player wins
+        // Play winning sound for player wins in AI mode OR any win in two-player mode
         if (audioRef.current) {
           audioRef.current.currentTime = 0;
           audioRef.current.play();
@@ -447,9 +453,19 @@ function App() {
     if (winner === "Draw") {
       return "It's a Draw! 🤝";
     } else if (winner) {
-      return `${winner} Wins!`;
+      // FIX: For two player mode, show X/O instead of Player/AI
+      if (gameMode === "twoPlayer") {
+        return `${winner} Wins!`; // This will show "X Wins!" or "O Wins!"
+      } else {
+        return `${winner} Wins!`; // This will show "Player Wins!" or "AI Wins!"
+      }
     } else {
-      return `${player}'s Turn`;
+      // For current player display
+      if (gameMode === "twoPlayer") {
+        return `${player}'s Turn`; // This will show "X's Turn" or "O's Turn"
+      } else {
+        return `${player}'s Turn`; // This will show "Player's Turn" or "AI's Turn"
+      }
     }
   };
 
