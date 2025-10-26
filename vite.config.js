@@ -22,6 +22,7 @@ export default defineConfig({
             src: "/android-icon-192x192.png",
             sizes: "192x192",
             type: "image/png",
+            purpose: "maskable",
           },
         ],
       },
